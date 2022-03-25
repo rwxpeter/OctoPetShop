@@ -30,3 +30,24 @@ jobs:
     # dotnet Publish
     - name: Publish Web
       run: dotnet publish ${{ github.workspace }}\OctopusSamples.OctoPetShop.Web/OctopusSamples.OctoPetShop.Web.csproj --configuration ${{ env.BuildConfiguration }} --output ${{ github.workspace }}\output\OctoPetShop.Web\
+
+    # Upload Artifact
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with: 
+        name: octo-pet-shop
+        path: ${{ github.workspace }}\output\OctoPetShop.Web\
+    
+    # Download Artifact
+    DeployToDevelopment: 
+      runs-on: windows-latest
+      needs: OctoPetShopBuild
+      environment: Development
+
+      steps:
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: octo-pet-shop
+          path: .\OctoPetShop.Web\
