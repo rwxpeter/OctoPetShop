@@ -39,15 +39,15 @@ jobs:
         path: ${{ github.workspace }}\output\OctoPetShop.Web\
     
     # Download Artifact
-    DeployToDevelopment: 
-      runs-on: windows-latest
-      needs: OctoPetShopBuild
-      environment: Development
+  DeployToDevelopment: 
+    runs-on: windows-latest
+    needs: OctoPetShopBuild
+    environment: Development
 
-      steps:
+    steps:
 
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: octo-pet-shop
-          path: .\OctoPetShop.Web\
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: octo-pet-shop
+        path: .\OctoPetShop.Web\
