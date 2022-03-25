@@ -43,7 +43,7 @@ jobs:
     
     # Push OctoPetShop Web Package
     - name: Push OctoPetShop Web
-      run: octo push --package=${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web
+      run: octo push --package=${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.1${{ github.run_number }}.0.zip
 
     # Create Octopus Release
     - name: Create a Release in Octopus
