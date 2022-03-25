@@ -48,7 +48,8 @@ jobs:
     # Create Octopus Release
     - name: Create a Release in Octopus
       uses: OctopusDeploy/create-relate-in-action@v1.1.1
-      with: ${{ secrets.OCTOPUS_API_KEY }}
+      with: 
+        api_key: ${{ secrets.OCTOPUS_API_KEY }}
         project: "OctoPetShop"
         server: ${{ secrets.OCTOPUS_SERVER_URL }}
         space: ${{ secrets.OCTOPUS_SPACE }}
