@@ -1,7 +1,9 @@
 name: build-and-create-release
 
 on:
-  workflow_dispatch:
+  push:
+    branches: 
+      - 'main'
 
 env: 
   solution: '**/*.sln'
@@ -15,6 +17,10 @@ jobs:
     
     - uses: actions/checkout@v2
     
+    # Install the Octopus CLI
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
+
     # Install Dependencies
     - name: Install Dependencies
       run: dotnet restore
@@ -31,23 +37,19 @@ jobs:
     - name: Publish Web
       run: dotnet publish ${{ github.workspace }}\OctopusSamples.OctoPetShop.Web/OctopusSamples.OctoPetShop.Web.csproj --configuration ${{ env.BuildConfiguration }} --output ${{ github.workspace }}\output\OctoPetShop.Web\
 
-    # Upload Artifact
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with: 
-        name: octo-pet-shop
-        path: ${{ github.workspace }}\output\OctoPetShop.Web\
+    # Package OctoPetShop Web
+    - name: Package OctoPetShop Web
+      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=1${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
     
-    # Download Artifact
-  DeployToDevelopment: 
-    runs-on: windows-latest
-    needs: OctoPetShopBuild
-    environment: Development
+    # Push OctoPetShop Web Package
+    - name: Push OctoPetShop Web
+      run: octo push --package=${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web
 
-    steps:
-
-    - name: Download Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: octo-pet-shop
-        path: .\OctoPetShop.Web\
+    # Create Octopus Release
+    - name: Create a Release in Octopus
+      uses: OctopusDeploy/create-relate-in-action@v1.1.1
+      with: ${{ secrets.OCTOPUS_API_KEY }}
+        project: "OctoPetShop"
+        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        space: ${{ secrets.OCTOPUS_SPACE }}
+        version: 1.${{ github.run_number }}
